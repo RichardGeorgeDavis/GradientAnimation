@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <title>Stripe Gradient 3</title>
+        <script src="Gradient.js" ></script>
+    </head>
+    <style>
+        body {
+            margin:0;
+            padding:0;
+        }
+        #gradient-canvas {
+          --gradient-color-1: #B7EAFF;
+          --gradient-color-2: #E7AEFE;
+          --gradient-color-3: #FEE9A2;
+          --gradient-color-4: #fff;
+
+          /* --gradient-color-1: #B7EAFF;
+          --gradient-color-2: #fff;
+          --gradient-color-3: #fff;
+          --gradient-color-4: #A2FDDD; */
+
+          /* --gradient-color-1: #B7EAFF;
+          --gradient-color-2: #E7AEFE;
+          --gradient-color-3: #FFAFDB;
+          --gradient-color-4: #A2FDDD; */
+        }
+    </style>
+    <body>
+        <canvas id="gradient-canvas" style="width:100vw;height:100vh"></canvas>
+        <script>
+            var gradient = new Gradient()
+            gradient.initGradient('#gradient-canvas');
+        </script>
+    </body>
+</html>
