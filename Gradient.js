@@ -12,6 +12,19 @@ function normalizeColor(hexCode) {
   } ["SCREEN", "LINEAR_LIGHT"].reduce((hexCode, t, n) => Object.assign(hexCode, {
     [t]: n
   }), {});
+
+function normalizedColorToHex(color = []) {
+    return `#${color.map(channel => Math.max(0, Math.min(255, Math.round(255 * channel))).toString(16).padStart(2, "0")).join("")}`
+}
+
+function hexToNormalizedColor(hexValue) {
+    let hex = `${hexValue || ""}`.trim();
+    if (!hex) return null;
+    hex[0] !== "#" && (hex = `#${hex}`);
+    if (!/^#[\da-f]{3}$|^#[\da-f]{6}$/i.test(hex)) return null;
+    4 === hex.length && (hex = `#${hex.slice(1).split("").map(char => `${char}${char}`).join("")}`);
+    return normalizeColor(Number.parseInt(hex.slice(1), 16))
+}
   
   //Essential functionality of WebGl
   //t = width
@@ -451,7 +464,7 @@ function normalizeColor(hexCode) {
         return this.vertexShader = [this.shaderFiles.noise, this.shaderFiles.blend, this.shaderFiles.vertex].join("\n\n"), new this.minigl.Material(this.vertexShader, this.shaderFiles.fragment, this.uniforms)
     }
     initMesh() {
-        this.material = this.initMaterial(), this.geometry = new this.minigl.PlaneGeometry, this.mesh = new this.minigl.Mesh(this.geometry, this.material)
+        this.material = this.initMaterial(), this.geometry = new this.minigl.PlaneGeometry, this.mesh = new this.minigl.Mesh(this.geometry, this.material), this.mesh.wireframe = this.conf.wireframe
     }
     shouldSkipFrame(e) {
         return !!window.document.hidden || (!this.conf.playing || (parseInt(e, 10) % 2 == 0 || void 0))
@@ -471,6 +484,82 @@ function normalizeColor(hexCode) {
     init() {
         this.initGradientColors(), this.initMesh(), this.resize(), requestAnimationFrame(this.animate), window.addEventListener("resize", this.resize)
     }
+    setAmplitude(value) {
+        const nextValue = Number(value);
+        Number.isNaN(nextValue) || (this.amp = nextValue, this.uniforms && (this.uniforms.u_vertDeform.value.noiseAmp.value = nextValue))
+    }
+    setGlobalNoiseFrequency(freqX = this.freqX, freqY = this.freqY) {
+        const nextFreqX = Number(freqX),
+            nextFreqY = Number(freqY);
+        Number.isNaN(nextFreqX) || Number.isNaN(nextFreqY) || (this.freqX = nextFreqX, this.freqY = nextFreqY, this.uniforms && (this.uniforms.u_global.value.noiseFreq.value = [nextFreqX, nextFreqY]))
+    }
+    setGlobalNoiseSpeed(value) {
+        const nextValue = Number(value);
+        Number.isNaN(nextValue) || this.uniforms && (this.uniforms.u_global.value.noiseSpeed.value = nextValue)
+    }
+    setVertexNoiseFrequency(freqX = 3, freqY = 4) {
+        const nextFreqX = Number(freqX),
+            nextFreqY = Number(freqY);
+        Number.isNaN(nextFreqX) || Number.isNaN(nextFreqY) || this.uniforms && (this.uniforms.u_vertDeform.value.noiseFreq.value = [nextFreqX, nextFreqY])
+    }
+    setVertexNoiseSpeed(value) {
+        const nextValue = Number(value);
+        Number.isNaN(nextValue) || this.uniforms && (this.uniforms.u_vertDeform.value.noiseSpeed.value = nextValue)
+    }
+    setVertexNoiseFlow(value) {
+        const nextValue = Number(value);
+        Number.isNaN(nextValue) || this.uniforms && (this.uniforms.u_vertDeform.value.noiseFlow.value = nextValue)
+    }
+    setShadowPower(value) {
+        const nextValue = Number(value);
+        Number.isNaN(nextValue) || this.uniforms && (this.uniforms.u_shadow_power.value = nextValue)
+    }
+    setDarkenTop(enabled) {
+        const isEnabled = !!enabled;
+        this.el && (isEnabled ? this.el.dataset.jsDarkenTop = "" : delete this.el.dataset.jsDarkenTop), this.uniforms && (this.uniforms.u_darken_top.value = isEnabled ? 1 : 0)
+    }
+    setWireframe(enabled) {
+        this.conf.wireframe = !!enabled, this.mesh && (this.mesh.wireframe = this.conf.wireframe)
+    }
+    setPlaying(playing) {
+        playing ? this.play() : this.pause()
+    }
+    setColor(index, hexValue) {
+        const nextColor = hexToNormalizedColor(hexValue);
+        nextColor && this.sectionColors && this.sectionColors[index] && (this.sectionColors[index] = nextColor, this.el && this.el.style.setProperty(`--gradient-color-${index + 1}`, normalizedColorToHex(nextColor)), 0 === index ? this.uniforms && (this.uniforms.u_baseColor.value = nextColor) : this.uniforms && this.uniforms.u_waveLayers.value[index - 1] && (this.uniforms.u_waveLayers.value[index - 1].value.color.value = nextColor))
+    }
+    getState() {
+        const globalNoise = this.uniforms ? this.uniforms.u_global.value : null,
+            vertexNoise = this.uniforms ? this.uniforms.u_vertDeform.value : null;
+        return {
+            amp: this.amp,
+            colors: (this.sectionColors || []).map(normalizedColorToHex),
+            darkenTop: !!(this.uniforms && 1 === this.uniforms.u_darken_top.value || this.el && "" === this.el.dataset.jsDarkenTop),
+            freqX: this.freqX,
+            freqY: this.freqY,
+            globalNoiseSpeed: globalNoise ? globalNoise.noiseSpeed.value : 5e-6,
+            playing: !!this.conf.playing,
+            shadowPower: this.uniforms ? this.uniforms.u_shadow_power.value : this.width < 600 ? 5 : 6,
+            vertexNoiseFlow: vertexNoise ? vertexNoise.noiseFlow.value : 3,
+            vertexNoiseFreqX: vertexNoise ? vertexNoise.noiseFreq.value[0] : 3,
+            vertexNoiseFreqY: vertexNoise ? vertexNoise.noiseFreq.value[1] : 4,
+            vertexNoiseSpeed: vertexNoise ? vertexNoise.noiseSpeed.value : 10,
+            wireframe: !!this.conf.wireframe
+        }
+    }
+    applyState(state = {}) {
+        void 0 !== state.amp && this.setAmplitude(state.amp),
+        void 0 !== state.freqX || void 0 !== state.freqY ? this.setGlobalNoiseFrequency(void 0 !== state.freqX ? state.freqX : this.freqX, void 0 !== state.freqY ? state.freqY : this.freqY) : void 0,
+        void 0 !== state.globalNoiseSpeed && this.setGlobalNoiseSpeed(state.globalNoiseSpeed),
+        void 0 !== state.vertexNoiseFreqX || void 0 !== state.vertexNoiseFreqY ? this.setVertexNoiseFrequency(void 0 !== state.vertexNoiseFreqX ? state.vertexNoiseFreqX : 3, void 0 !== state.vertexNoiseFreqY ? state.vertexNoiseFreqY : 4) : void 0,
+        void 0 !== state.vertexNoiseSpeed && this.setVertexNoiseSpeed(state.vertexNoiseSpeed),
+        void 0 !== state.vertexNoiseFlow && this.setVertexNoiseFlow(state.vertexNoiseFlow),
+        void 0 !== state.shadowPower && this.setShadowPower(state.shadowPower),
+        void 0 !== state.darkenTop && this.setDarkenTop(state.darkenTop),
+        void 0 !== state.wireframe && this.setWireframe(state.wireframe),
+        Array.isArray(state.colors) && state.colors.forEach((color, index) => this.setColor(index, color)),
+        void 0 !== state.playing && this.setPlaying(state.playing)
+    }
     /*
     * Waiting for the css variables to become available, usually on page load before we can continue.
     * Using default colors assigned below if no variables have been found after maxCssVarRetries
@@ -479,7 +568,7 @@ function normalizeColor(hexCode) {
         if (this.computedCanvasStyle && -1 !== this.computedCanvasStyle.getPropertyValue("--gradient-color-1").indexOf("#")) this.init(), this.addIsLoadedClass();
         else {
             if (this.cssVarRetries += 1, this.cssVarRetries > this.maxCssVarRetries) {
-                return this.sectionColors = [16711680, 16711680, 16711935, 65280, 255],void this.init();
+                return this.sectionColors = [16711680, 16711935, 65280, 255].map(normalizeColor), this.activeColors = [1, 1, 1, 1], void this.init();
             }
             requestAnimationFrame(() => this.waitForCssVars())
         }
@@ -496,7 +585,7 @@ function normalizeColor(hexCode) {
                 hex = `#${hexTemp}`
             }
             return hex && `0x${hex.substr(1)}`
-        }).filter(Boolean).map(normalizeColor)
+        }).filter(Boolean).map(normalizeColor), this.activeColors = this.sectionColors.map((_, index) => void 0 !== this.activeColors[index] ? this.activeColors[index] : 1)
     }
   }
   
