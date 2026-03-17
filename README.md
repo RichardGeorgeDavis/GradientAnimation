@@ -1,5 +1,9 @@
 # Gradient Animation
 
+<!-- workspace-hub:cover:start -->
+![GradientAnimation cover](cover.png)
+<!-- workspace-hub:cover:end -->
+
 Static WebGL gradient demos based on the Stripe-style animated canvas effect.
 
 ## What Is Here
