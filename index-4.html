@@ -1,0 +1,30 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Stripe Gradient 4</title>
+        <script src="Gradient.js" ></script>
+        <script src="controls.js"></script>
+        <link rel="stylesheet" href="controls.css">
+    </head>
+    <style>
+        body {
+            margin:0;
+            padding:0;
+        }
+        #gradient-canvas {
+            --gradient-color-1: #6ec3f4;
+            --gradient-color-2: #3a3aff;
+            --gradient-color-3: #ff61ab;
+            --gradient-color-4: #E63946;
+        }
+    </style>
+    <body>
+        <canvas id="gradient-canvas" style="width:100vw;height:100vh"></canvas>
+        <script>
+            window.gradient = new Gradient()
+            window.gradient.initGradient('#gradient-canvas');
+            mountGradientControls(window.gradient);
+        </script>
+    </body>
+</html>

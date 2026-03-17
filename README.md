@@ -10,6 +10,7 @@ Static WebGL gradient demos based on the Stripe-style animated canvas effect.
 - `index.html`: demo variant 1
 - `index-2.html`: demo variant 2
 - `index-3.html`: demo variant 3
+- `index-4.html`: demo variant 4
 - `Gradient.js`: rendering engine and runtime control API
 - `controls.js`: shared debug/admin overlay and page navigation
 - `controls.css`: shared overlay styling
@@ -19,7 +20,7 @@ Static WebGL gradient demos based on the Stripe-style animated canvas effect.
 - Each page renders a full-screen canvas and mounts the same debug/admin overlay.
 
 ## Debug And Admin Controls
-- Top navigation switches between `index.html`, `index-2.html`, and `index-3.html`.
+- Top navigation switches between `index.html`, `index-2.html`, `index-3.html`, and `index-4.html`.
 - The control panel lets you adjust:
   - amplitude
   - wireframe mode

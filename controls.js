@@ -8,6 +8,9 @@
     }, {
         href: "index-3.html",
         label: "Index 3"
+    }, {
+        href: "index-4.html",
+        label: "Index 4"
     }];
 
     function waitForGradientReady(gradient) {

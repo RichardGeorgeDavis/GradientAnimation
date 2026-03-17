@@ -1,14 +1,15 @@
 # Handover
 
 ## Summary
-- This repo is a static WebGL gradient demo with three standalone HTML entry points.
-- All three pages now share the same top navigation and debug/admin controls.
+- This repo is a static WebGL gradient demo with four standalone HTML entry points.
+- All four pages now share the same top navigation and debug/admin controls.
 - There is no build process; files are edited and served directly.
 
 ## Files In Current State
 - `index.html`: demo variant 1
 - `index-2.html`: demo variant 2
 - `index-3.html`: demo variant 3
+- `index-4.html`: demo variant 4
 - `Gradient.js`: renderer, animation loop, uniforms, and runtime control API
 - `controls.js`: shared navigation and debug/admin control panel
 - `controls.css`: overlay styles
@@ -17,8 +18,8 @@
 - `HANDOVER.md`: current-state handoff
 
 ## What Changed Recently
-- Added a shared on-page debug/admin overlay to all three demo pages.
-- Added top navigation between `index.html`, `index-2.html`, and `index-3.html`.
+- Added a shared on-page debug/admin overlay to all four demo pages.
+- Added top navigation between `index.html`, `index-2.html`, `index-3.html`, and `index-4.html`.
 - Added live controls for:
   - amplitude
   - wireframe
@@ -63,5 +64,6 @@
 
 ## Practical Next Steps
 1. Open all three HTML pages in a browser and confirm overlay layout, mobile behavior, and control responsiveness.
-2. Normalize page titles if the file-name mismatch matters for presentation.
-3. Add state persistence only if the user wants presets or sharable configurations.
+2. Verify the new `index-4.html` color preset alongside the existing demos.
+3. Normalize page titles if the file-name mismatch matters for presentation.
+4. Add state persistence only if the user wants presets or sharable configurations.
