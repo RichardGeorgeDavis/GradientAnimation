@@ -1,7 +1,7 @@
 # Gradient Animation
 
 <!-- workspace-hub:cover:start -->
-![GradientAnimation cover](cover.png)
+![GradientAnimation cover](https://raw.githubusercontent.com/RichardGeorgeDavis/GradientAnimation/main/cover.png)
 <!-- workspace-hub:cover:end -->
 
 Static WebGL gradient demos based on the Stripe-style animated canvas effect.
