@@ -6,6 +6,8 @@
 
 Static WebGL gradient demos based on the Stripe-style animated canvas effect.
 
+Preview: [proto.lucidity.design/sites/GradientAnimation/](https://proto.lucidity.design/sites/GradientAnimation/)
+
 ## What Is Here
 - `index.html`: demo variant 1
 - `index-2.html`: demo variant 2
